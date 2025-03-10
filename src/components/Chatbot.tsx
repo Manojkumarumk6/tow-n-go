@@ -34,7 +34,7 @@ const Chatbot = () => {
   // Chat toggle button
   const ChatButton = () => (
     <motion.button
-      className="fixed bottom-24 right-6 z-50 p-4 rounded-full bg-primary text-white shadow-lg"
+      className="fixed bottom-24 right-6 z-50 p-4 rounded-full bg-accent text-accent-foreground shadow-lg"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       onClick={toggleChat}
@@ -76,9 +76,9 @@ const Chatbot = () => {
             className="fixed bottom-24 right-6 z-50 w-80 md:w-96 h-96 flex flex-col bg-background border rounded-xl shadow-xl overflow-hidden"
           >
             {/* Header */}
-            <div className="p-3 bg-primary text-primary-foreground flex justify-between items-center">
+            <div className="p-3 bg-accent text-accent-foreground flex justify-between items-center">
               <h3 className="font-medium">Roadside Assistant</h3>
-              <button onClick={toggleChat} className="p-1 rounded-full hover:bg-primary-foreground/10">
+              <button onClick={toggleChat} className="p-1 rounded-full hover:bg-accent-foreground/10">
                 <X size={18} />
               </button>
             </div>
@@ -104,12 +104,12 @@ const Chatbot = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-primary"
+                className="flex-1 p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-accent"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || state.isLoading}
-                className="p-2 rounded-lg bg-primary text-white disabled:opacity-50"
+                className="p-2 rounded-lg bg-accent text-accent-foreground disabled:opacity-50"
               >
                 <Send size={18} />
               </button>
