@@ -24,6 +24,8 @@ const Hero = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        whileHover={undefined}
+        whileTap={undefined}
       >
         <span className="px-3 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full">
           Your Roadside Companion
@@ -87,6 +89,8 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 * index }}
+              whileHover={undefined}
+              whileTap={undefined}
             >
               <div className={`absolute bottom-0 left-0 w-1.5 h-full bg-gradient-to-t ${feature.gradient}`} />
               <h3 className="font-semibold text-lg">{feature.title}</h3>
@@ -100,13 +104,3 @@ const Hero = () => {
 };
 
 export default Hero;
-
-// Add this mock import at the top
-const motion = {
-  div: ({ children, className, initial, animate, transition, whileHover, whileTap }) => {
-    return <div className={className}>{children}</div>;
-  },
-  button: ({ children, className, whileHover, whileTap, onClick }) => {
-    return <button className={className} onClick={onClick}>{children}</button>;
-  }
-};
