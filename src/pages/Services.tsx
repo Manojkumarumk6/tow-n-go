@@ -5,10 +5,25 @@ import EmergencyButton from '@/components/EmergencyButton';
 import OfflineNotice from '@/components/OfflineNotice';
 import { Wrench, Truck, Car, Clock, MapPin, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const Services = () => {
   const navigate = useNavigate();
   const isOnline = navigator.onLine;
+  
+  // Simulating authentication state - in a real app, this would come from an auth context
+  const isAuthenticated = false; // Always false for this demo
+  
+  const handleServiceClick = (serviceFunction: () => void) => {
+    if (isAuthenticated) {
+      // If user is authenticated, execute the service function
+      serviceFunction();
+    } else {
+      // If not authenticated, redirect to login page
+      toast.info("Please login to access this service");
+      navigate('/login', { state: { from: '/services' } });
+    }
+  };
   
   const services = [
     {
@@ -16,42 +31,42 @@ const Services = () => {
       title: "Towing Service",
       description: "Request immediate towing assistance for your vehicle.",
       available: true, // Always available, even offline
-      onClick: () => alert("Towing service requested! Help is on the way.")
+      onClick: () => handleServiceClick(() => alert("Towing service requested! Help is on the way."))
     },
     {
       icon: <Wrench className="h-6 w-6 text-primary" />,
       title: "Roadside Repair",
       description: "Minor repairs to get you back on the road quickly.",
       available: true, // Always available, even offline
-      onClick: () => alert("Repair service requested! A technician will arrive shortly.")
+      onClick: () => handleServiceClick(() => alert("Repair service requested! A technician will arrive shortly."))
     },
     {
       icon: <Car className="h-6 w-6 text-primary" />,
       title: "Fuel Delivery",
       description: "Get fuel delivered if you've run out.",
       available: isOnline,
-      onClick: () => alert("Fuel delivery requested! Delivery is on the way.")
+      onClick: () => handleServiceClick(() => alert("Fuel delivery requested! Delivery is on the way."))
     },
     {
       icon: <Clock className="h-6 w-6 text-primary" />,
       title: "Service History",
       description: "View all your past service requests and details.",
       available: isOnline,
-      onClick: () => {}
+      onClick: () => handleServiceClick(() => {})
     },
     {
       icon: <MapPin className="h-6 w-6 text-primary" />,
       title: "Nearby Services",
       description: "Find mechanics and service centers near you.",
       available: isOnline,
-      onClick: () => {}
+      onClick: () => handleServiceClick(() => {})
     },
     {
       icon: <CreditCard className="h-6 w-6 text-primary" />,
       title: "Traffic Challans",
       description: "View and pay your pending traffic violation tickets.",
       available: isOnline,
-      onClick: () => navigate('/challan')
+      onClick: () => handleServiceClick(() => navigate('/challan'))
     }
   ];
   
