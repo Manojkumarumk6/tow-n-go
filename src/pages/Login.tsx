@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, LogIn } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   
   // Get the previous location if available
   const from = location.state?.from || '/';
@@ -25,8 +27,9 @@ const Login = () => {
     
     try {
       setIsLoading(true);
-      // Simulate login - in a real app, you would make an API call here
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Use our auth context login function
+      await login(email, password);
       
       // Mock successful login
       toast.success('Login successful!');

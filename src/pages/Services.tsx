@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ServiceCard from '@/components/ServiceCard';
 import EmergencyButton from '@/components/EmergencyButton';
@@ -6,13 +5,12 @@ import OfflineNotice from '@/components/OfflineNotice';
 import { Wrench, Truck, Car, Clock, MapPin, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Services = () => {
   const navigate = useNavigate();
   const isOnline = navigator.onLine;
-  
-  // Simulating authentication state - in a real app, this would come from an auth context
-  const isAuthenticated = false; // Always false for this demo
+  const { isAuthenticated } = useAuth();
   
   const handleServiceClick = (serviceFunction: () => void) => {
     if (isAuthenticated) {
