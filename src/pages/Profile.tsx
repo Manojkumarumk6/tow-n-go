@@ -3,9 +3,22 @@ import React from 'react';
 import VehicleProfile from '@/components/VehicleProfile';
 import EmergencyButton from '@/components/EmergencyButton';
 import OfflineNotice from '@/components/OfflineNotice';
-import { User, Settings, Shield, Clock, Plus } from 'lucide-react';
+import { User as UserIcon, Settings, Shield, Clock, Plus } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Profile = () => {
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/profile' } });
+    }
+  }, [isAuthenticated, navigate]);
+
   // Mock data - in a real app, this would come from state management or API
   const vehicleData = {
     make: "Honda",
@@ -19,18 +32,20 @@ const Profile = () => {
     alert("Vehicle edit functionality would open here");
   };
   
+  if (!user) return null; // Don't render anything while redirecting or if no user
+  
   return (
     <div className="page-transition pt-24 pb-16 px-6">
       <div className="container mx-auto max-w-5xl">
         <div className="glass-card rounded-2xl p-6 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <User className="h-10 w-10 text-primary" />
+              <UserIcon className="h-10 w-10 text-primary" />
             </div>
             
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-2xl font-bold">John Doe</h1>
-              <p className="text-muted-foreground">Premium Member</p>
+              <h1 className="text-2xl font-bold">{user.name}</h1>
+              <p className="text-muted-foreground">{user.isPremium ? 'Premium Member' : 'Standard Member'}</p>
               
               <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
