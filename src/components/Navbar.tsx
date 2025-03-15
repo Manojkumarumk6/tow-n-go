@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Wifi, WifiOff, Menu, X } from 'lucide-react';
+import { Wifi, WifiOff, Menu, X, LogIn, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Navbar = () => {
@@ -73,6 +73,35 @@ const Navbar = () => {
               </span>
             </div>
             
+            {/* Auth buttons - desktop */}
+            <div className="hidden md:flex items-center space-x-2">
+              <Link 
+                to="/login"
+                className={cn(
+                  "text-sm font-medium flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-colors",
+                  location.pathname === "/login" 
+                    ? "bg-primary/10 text-primary" 
+                    : "hover:bg-muted"
+                )}
+              >
+                <LogIn className="h-4 w-4 mr-1" />
+                <span>Login</span>
+              </Link>
+              
+              <Link 
+                to="/signup"
+                className={cn(
+                  "text-sm font-medium flex items-center space-x-1 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg transition-colors",
+                  location.pathname === "/signup" 
+                    ? "bg-primary/90" 
+                    : "hover:bg-primary/90"
+                )}
+              >
+                <UserPlus className="h-4 w-4 mr-1" />
+                <span>Sign Up</span>
+              </Link>
+            </div>
+            
             {/* Mobile menu button */}
             <button 
               onClick={toggleMenu}
@@ -103,6 +132,27 @@ const Navbar = () => {
                   {route.label}
                 </Link>
               ))}
+              
+              {/* Auth links - mobile */}
+              <div className="border-t pt-2 mt-2">
+                <Link
+                  to="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center px-4 py-2 rounded-lg transition-colors hover:bg-muted"
+                >
+                  <LogIn className="h-4 w-4 mr-2" />
+                  <span>Login</span>
+                </Link>
+                
+                <Link
+                  to="/signup"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center px-4 py-2 mt-1 rounded-lg bg-primary/10 text-primary transition-colors"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  <span>Sign Up</span>
+                </Link>
+              </div>
             </div>
           </div>
         )}
