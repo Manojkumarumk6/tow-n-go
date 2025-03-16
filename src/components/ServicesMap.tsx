@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -6,6 +5,12 @@ import { MapPin, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+
+declare global {
+  interface Window {
+    selectLocation: (id: number) => void;
+  }
+}
 
 interface ServiceLocation {
   id: number;
@@ -28,7 +33,6 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
-  // Service locations data (mock data)
   const serviceLocations: ServiceLocation[] = [
     {
       id: 1,
@@ -67,7 +71,6 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
   const initializeMap = () => {
     if (!mapContainer.current || !mapToken) return;
     
-    // Initialize map
     mapboxgl.accessToken = mapToken;
     
     map.current = new mapboxgl.Map({
@@ -77,7 +80,6 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
       zoom: 13,
     });
 
-    // Add navigation controls
     map.current.addControl(
       new mapboxgl.NavigationControl({
         visualizePitch: true,
@@ -85,7 +87,6 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
       'top-right'
     );
 
-    // Add geolocate control
     const geolocate = new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true
@@ -95,30 +96,24 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
     
     map.current.addControl(geolocate);
 
-    // When map loads, try to locate user and add service markers
     map.current.on('load', () => {
       geolocate.trigger();
       
-      // Listen for the geolocate event
       geolocate.on('geolocate', (e: any) => {
         const userCoords: [number, number] = [e.coords.longitude, e.coords.latitude];
         setUserLocation(userCoords);
         
-        // Add user location marker with different color
         if (map.current) {
-          // Center map on user location
           map.current.flyTo({
             center: userCoords,
             zoom: 14,
             essential: true
           });
           
-          // Add service markers
           addServiceMarkers();
         }
       });
       
-      // Add service markers anyway in case geolocate fails
       addServiceMarkers();
     });
   };
@@ -126,20 +121,16 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
   const addServiceMarkers = () => {
     if (!map.current) return;
     
-    // Remove existing markers
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
     
-    // Add new markers for each service location
     serviceLocations.forEach(location => {
-      // Create custom marker element
       const el = document.createElement('div');
       el.className = 'service-marker';
       el.innerHTML = `<div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wrench"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
                       </div>`;
       
-      // Create marker
       const marker = new mapboxgl.Marker(el)
         .setLngLat(location.location)
         .setPopup(
@@ -164,7 +155,6 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
       markersRef.current.push(marker);
     });
     
-    // Add window function to handle popup button clicks
     window.selectLocation = (id: number) => {
       const location = serviceLocations.find(loc => loc.id === id);
       if (location && onSelectLocation) {
@@ -181,23 +171,18 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
     
     toast.info(`Searching for "${searchInput}" nearby services...`);
     
-    // In a real app, this would call an API. Here we just simulate a search.
     setTimeout(() => {
       toast.success(`Found ${serviceLocations.length} services matching "${searchInput}"`);
       
-      // Highlight markers that match the search
       if (map.current) {
-        // Reset markers
         markersRef.current.forEach(marker => marker.remove());
         markersRef.current = [];
         
-        // Filter services based on search
         const filteredLocations = serviceLocations.filter(
           loc => loc.name.toLowerCase().includes(searchInput.toLowerCase()) || 
                 loc.services.some(s => s.toLowerCase().includes(searchInput.toLowerCase()))
         );
         
-        // Add filtered markers
         filteredLocations.forEach(location => {
           const el = document.createElement('div');
           el.className = 'service-marker';
@@ -226,11 +211,10 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
             )
             .addTo(map.current);
           
-          marker.togglePopup(); // Open the popup for the matching services
+          marker.togglePopup();
           markersRef.current.push(marker);
         });
         
-        // If no results, show all markers
         if (filteredLocations.length === 0) {
           toast.info("No exact matches found. Showing all services.");
           addServiceMarkers();
@@ -239,21 +223,17 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
     }, 1000);
   };
 
-  // For demo purposes, simple input for Mapbox token
   useEffect(() => {
-    // Check if we already have a token in localStorage
     const savedToken = localStorage.getItem('mapbox_token');
     if (savedToken) {
       setMapToken(savedToken);
     }
   }, []);
 
-  // Initialize map when we have the token
   useEffect(() => {
     if (mapToken) {
       initializeMap();
       
-      // Save token to localStorage for convenience
       localStorage.setItem('mapbox_token', mapToken);
     }
   }, [mapToken]);
@@ -303,9 +283,8 @@ const ServicesMap: React.FC<ServicesMapProps> = ({ onSelectLocation }) => {
             </Button>
           </div>
           <div className="flex-1 min-h-[400px] border rounded-lg overflow-hidden relative">
-            {/* Map styles will be applied to this container */}
             <div ref={mapContainer} className="absolute inset-0" />
-            <style jsx global>{`
+            <style>{`
               .mapboxgl-ctrl-attrib {
                 font-size: 10px;
               }
