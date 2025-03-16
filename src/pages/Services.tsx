@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import ServiceCard from '@/components/ServiceCard';
 import EmergencyButton from '@/components/EmergencyButton';
 import OfflineNotice from '@/components/OfflineNotice';
@@ -6,11 +7,17 @@ import { Wrench, Truck, Car, Clock, MapPin, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const Services = () => {
   const navigate = useNavigate();
   const isOnline = navigator.onLine;
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const [serviceHistoryOpen, setServiceHistoryOpen] = useState(false);
+  const [nearbyServicesOpen, setNearbyServicesOpen] = useState(false);
   
   const handleServiceClick = (serviceFunction: () => void) => {
     if (isAuthenticated) {
@@ -22,6 +29,21 @@ const Services = () => {
       navigate('/login', { state: { from: '/services' } });
     }
   };
+
+  // Mock service history data
+  const serviceHistory = [
+    { id: 'SRV-1001', date: '2023-10-15', type: 'Towing', status: 'Completed', cost: '$85.00' },
+    { id: 'SRV-982', date: '2023-09-22', type: 'Repair', status: 'Completed', cost: '$125.50' },
+    { id: 'SRV-879', date: '2023-08-05', type: 'Fuel Delivery', status: 'Completed', cost: '$45.00' },
+  ];
+
+  // Mock nearby services data
+  const nearbyServices = [
+    { id: 1, name: 'City Garage', distance: '0.8 miles', rating: '4.8', services: ['Repair', 'Towing'] },
+    { id: 2, name: 'AutoFix Center', distance: '1.2 miles', rating: '4.5', services: ['Repair', 'Oil Change'] },
+    { id: 3, name: 'Express Mechanics', distance: '2.5 miles', rating: '4.7', services: ['Repair', 'Towing', 'Battery'] },
+    { id: 4, name: 'Highway Assistance', distance: '3.1 miles', rating: '4.3', services: ['Towing', 'Fuel'] },
+  ];
   
   const services = [
     {
@@ -29,35 +51,54 @@ const Services = () => {
       title: "Towing Service",
       description: "Request immediate towing assistance for your vehicle.",
       available: true, // Always available, even offline
-      onClick: () => handleServiceClick(() => alert("Towing service requested! Help is on the way."))
+      onClick: () => handleServiceClick(() => {
+        toast.success("Towing service requested!");
+        setTimeout(() => {
+          toast.info("Help is on the way. ETA: 25 minutes");
+        }, 1500);
+      })
     },
     {
       icon: <Wrench className="h-6 w-6 text-primary" />,
       title: "Roadside Repair",
       description: "Minor repairs to get you back on the road quickly.",
       available: true, // Always available, even offline
-      onClick: () => handleServiceClick(() => alert("Repair service requested! A technician will arrive shortly."))
+      onClick: () => handleServiceClick(() => {
+        toast.success("Repair service requested!");
+        setTimeout(() => {
+          toast.info("A technician will arrive shortly. ETA: 35 minutes");
+        }, 1500);
+      })
     },
     {
       icon: <Car className="h-6 w-6 text-primary" />,
       title: "Fuel Delivery",
       description: "Get fuel delivered if you've run out.",
       available: isOnline,
-      onClick: () => handleServiceClick(() => alert("Fuel delivery requested! Delivery is on the way."))
+      onClick: () => handleServiceClick(() => {
+        toast.success("Fuel delivery requested!");
+        setTimeout(() => {
+          toast.info("Delivery is on the way. ETA: 20 minutes");
+        }, 1500);
+      })
     },
     {
       icon: <Clock className="h-6 w-6 text-primary" />,
       title: "Service History",
       description: "View all your past service requests and details.",
       available: isOnline,
-      onClick: () => handleServiceClick(() => {})
+      onClick: () => handleServiceClick(() => {
+        setServiceHistoryOpen(true);
+      })
     },
     {
       icon: <MapPin className="h-6 w-6 text-primary" />,
       title: "Nearby Services",
       description: "Find mechanics and service centers near you.",
       available: isOnline,
-      onClick: () => handleServiceClick(() => {})
+      onClick: () => handleServiceClick(() => {
+        setNearbyServicesOpen(true);
+      })
     },
     {
       icon: <CreditCard className="h-6 w-6 text-primary" />,
@@ -102,6 +143,125 @@ const Services = () => {
           ))}
         </div>
       </div>
+      
+      {/* Service History Dialog */}
+      <Dialog open={serviceHistoryOpen} onOpenChange={setServiceHistoryOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Service History</DialogTitle>
+            <DialogDescription>
+              View all your past service requests and their details.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <Tabs defaultValue="all">
+              <TabsList className="w-full">
+                <TabsTrigger value="all" className="flex-1">All Services</TabsTrigger>
+                <TabsTrigger value="completed" className="flex-1">Completed</TabsTrigger>
+                <TabsTrigger value="pending" className="flex-1">Pending</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="all" className="mt-4">
+                {serviceHistory.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Service ID</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Cost</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {serviceHistory.map((service) => (
+                        <TableRow key={service.id}>
+                          <TableCell className="font-medium">{service.id}</TableCell>
+                          <TableCell>{service.date}</TableCell>
+                          <TableCell>{service.type}</TableCell>
+                          <TableCell>
+                            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                              {service.status}
+                            </span>
+                          </TableCell>
+                          <TableCell>{service.cost}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="text-center py-8">
+                    <Clock className="h-12 w-12 mx-auto text-muted-foreground" />
+                    <p className="mt-4 text-muted-foreground">No service history available</p>
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="completed" className="mt-4">
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">All completed services will appear here</p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="pending" className="mt-4">
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">All pending services will appear here</p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Nearby Services Dialog */}
+      <Dialog open={nearbyServicesOpen} onOpenChange={setNearbyServicesOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Nearby Services</DialogTitle>
+            <DialogDescription>
+              Find mechanics and service centers near your location.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <div className="w-full p-4 mb-4 bg-muted rounded-lg">
+              <p className="text-sm text-center">
+                Showing results near your current location
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              {nearbyServices.map((service) => (
+                <div key={service.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold">{service.name}</h3>
+                      <p className="text-sm text-muted-foreground">{service.distance} away</p>
+                    </div>
+                    <div className="bg-primary/10 px-2 py-1 rounded-full text-sm text-primary">
+                      {service.rating} ★
+                    </div>
+                  </div>
+                  
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {service.services.map((s, idx) => (
+                      <span key={idx} className="text-xs px-2 py-1 bg-background border rounded-full">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-3 flex gap-2">
+                    <Button size="sm" variant="outline" className="flex-1">Call</Button>
+                    <Button size="sm" className="flex-1">Directions</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       <OfflineNotice />
       <EmergencyButton />
