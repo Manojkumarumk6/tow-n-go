@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ServiceCard from '@/components/ServiceCard';
 import EmergencyButton from '@/components/EmergencyButton';
@@ -11,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import ServicesMap from '@/components/ServicesMap';
 
 const Services = () => {
   const navigate = useNavigate();
@@ -18,26 +18,23 @@ const Services = () => {
   const { isAuthenticated, user } = useAuth();
   const [serviceHistoryOpen, setServiceHistoryOpen] = useState(false);
   const [nearbyServicesOpen, setNearbyServicesOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
   
   const handleServiceClick = (serviceFunction: () => void) => {
     if (isAuthenticated) {
-      // If user is authenticated, execute the service function
       serviceFunction();
     } else {
-      // If not authenticated, redirect to login page
       toast.info("Please login to access this service");
       navigate('/login', { state: { from: '/services' } });
     }
   };
 
-  // Mock service history data
   const serviceHistory = [
     { id: 'SRV-1001', date: '2023-10-15', type: 'Towing', status: 'Completed', cost: '$85.00' },
     { id: 'SRV-982', date: '2023-09-22', type: 'Repair', status: 'Completed', cost: '$125.50' },
     { id: 'SRV-879', date: '2023-08-05', type: 'Fuel Delivery', status: 'Completed', cost: '$45.00' },
   ];
 
-  // Mock nearby services data
   const nearbyServices = [
     { id: 1, name: 'City Garage', distance: '0.8 miles', rating: '4.8', services: ['Repair', 'Towing'] },
     { id: 2, name: 'AutoFix Center', distance: '1.2 miles', rating: '4.5', services: ['Repair', 'Oil Change'] },
@@ -50,7 +47,7 @@ const Services = () => {
       icon: <Truck className="h-6 w-6 text-primary" />,
       title: "Towing Service",
       description: "Request immediate towing assistance for your vehicle.",
-      available: true, // Always available, even offline
+      available: true,
       onClick: () => handleServiceClick(() => {
         toast.success("Towing service requested!");
         setTimeout(() => {
@@ -62,7 +59,7 @@ const Services = () => {
       icon: <Wrench className="h-6 w-6 text-primary" />,
       title: "Roadside Repair",
       description: "Minor repairs to get you back on the road quickly.",
-      available: true, // Always available, even offline
+      available: true,
       onClick: () => handleServiceClick(() => {
         toast.success("Repair service requested!");
         setTimeout(() => {
@@ -144,7 +141,6 @@ const Services = () => {
         </div>
       </div>
       
-      {/* Service History Dialog */}
       <Dialog open={serviceHistoryOpen} onOpenChange={setServiceHistoryOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -214,9 +210,8 @@ const Services = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Nearby Services Dialog */}
       <Dialog open={nearbyServicesOpen} onOpenChange={setNearbyServicesOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Nearby Services</DialogTitle>
             <DialogDescription>
@@ -225,40 +220,83 @@ const Services = () => {
           </DialogHeader>
           
           <div className="mt-4">
-            <div className="w-full p-4 mb-4 bg-muted rounded-lg">
-              <p className="text-sm text-center">
-                Showing results near your current location
-              </p>
-            </div>
-            
-            <div className="space-y-4">
-              {nearbyServices.map((service) => (
-                <div key={service.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold">{service.name}</h3>
-                      <p className="text-sm text-muted-foreground">{service.distance} away</p>
-                    </div>
-                    <div className="bg-primary/10 px-2 py-1 rounded-full text-sm text-primary">
-                      {service.rating} ★
-                    </div>
-                  </div>
-                  
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {service.services.map((s, idx) => (
-                      <span key={idx} className="text-xs px-2 py-1 bg-background border rounded-full">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-3 flex gap-2">
-                    <Button size="sm" variant="outline" className="flex-1">Call</Button>
-                    <Button size="sm" className="flex-1">Directions</Button>
-                  </div>
+            <Tabs defaultValue="map">
+              <TabsList className="w-full mb-4">
+                <TabsTrigger value="map" className="flex-1">Map View</TabsTrigger>
+                <TabsTrigger value="list" className="flex-1">List View</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="map" className="mt-2">
+                <div className="h-[500px]">
+                  <ServicesMap 
+                    onSelectLocation={(location) => {
+                      setSelectedLocation(location);
+                      toast.info(`Selected ${location.name}`);
+                    }}
+                  />
                 </div>
-              ))}
-            </div>
+              </TabsContent>
+              
+              <TabsContent value="list" className="mt-2">
+                <div className="space-y-4">
+                  {nearbyServices.map((service) => (
+                    <div key={service.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-semibold">{service.name}</h3>
+                          <p className="text-sm text-muted-foreground">{service.distance} away</p>
+                        </div>
+                        <div className="bg-primary/10 px-2 py-1 rounded-full text-sm text-primary">
+                          {service.rating} ★
+                        </div>
+                      </div>
+                      
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {service.services.map((s, idx) => (
+                          <span key={idx} className="text-xs px-2 py-1 bg-background border rounded-full">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      <div className="mt-3 flex gap-2">
+                        <Button size="sm" variant="outline" className="flex-1">Call</Button>
+                        <Button size="sm" className="flex-1">Directions</Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+            
+            {selectedLocation && (
+              <div className="mt-4 p-4 border rounded-lg bg-muted/30">
+                <div className="flex justify-between">
+                  <h3 className="font-semibold text-lg">{selectedLocation.name}</h3>
+                  <span className="bg-primary/10 px-2 py-1 rounded-full text-sm text-primary">
+                    {selectedLocation.rating} ★
+                  </span>
+                </div>
+                <p className="text-sm mt-1">{selectedLocation.address}</p>
+                
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {selectedLocation.services.map((s: string, idx: number) => (
+                    <span key={idx} className="text-xs px-2 py-1 bg-background border rounded-full">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <Button size="sm" variant="outline">
+                    Call Service
+                  </Button>
+                  <Button size="sm">
+                    Request Service
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
