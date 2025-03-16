@@ -3,14 +3,17 @@ import React from 'react';
 import VehicleProfile from '@/components/VehicleProfile';
 import EmergencyButton from '@/components/EmergencyButton';
 import OfflineNotice from '@/components/OfflineNotice';
-import { User as UserIcon, Settings, Shield, Clock, Plus } from 'lucide-react';
+import { UserIcon, Settings, Shield, Clock, Plus, Car } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 
 const Profile = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  // State to track if user has any vehicles
+  const [userVehicles, setUserVehicles] = useState<any[]>([]);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -19,17 +22,8 @@ const Profile = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  // Mock data - in a real app, this would come from state management or API
-  const vehicleData = {
-    make: "Honda",
-    model: "Accord",
-    year: 2021,
-    licensePlate: "AB123XY",
-    color: "Blue"
-  };
-  
-  const handleEditVehicle = () => {
-    alert("Vehicle edit functionality would open here");
+  const handleAddVehicle = () => {
+    alert("Add vehicle functionality would open here");
   };
   
   if (!user) return null; // Don't render anything while redirecting or if no user
@@ -65,41 +59,72 @@ const Profile = () => {
         
         <h2 className="text-xl font-semibold mb-4">My Vehicles</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <VehicleProfile vehicle={vehicleData} onEdit={handleEditVehicle} />
-          
-          <div className="glass-card rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-muted/50 transition-colors h-full min-h-[200px]">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Plus className="h-6 w-6 text-primary" />
+        {userVehicles.length === 0 ? (
+          <Card className="bg-white/50 backdrop-blur-md border-0 shadow-md mb-6">
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <Car className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold">No Vehicles Added Yet</h3>
+              <p className="text-muted-foreground mt-2 max-w-md">
+                You haven't added any vehicles to your profile. Add your first vehicle to access towing and roadside assistance services.
+              </p>
+              <button 
+                className="mt-6 px-5 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
+                onClick={handleAddVehicle}
+              >
+                <Plus className="h-4 w-4" /> Add Your First Vehicle
+              </button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {userVehicles.map((vehicle, index) => (
+              <VehicleProfile key={index} vehicle={vehicle} onEdit={() => {}} />
+            ))}
+            
+            <div 
+              className="glass-card rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-muted/50 transition-colors h-full min-h-[200px]"
+              onClick={handleAddVehicle}
+            >
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <Plus className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-semibold">Add Vehicle</h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Register additional vehicles to your profile
+              </p>
             </div>
-            <h3 className="font-semibold">Add Vehicle</h3>
-            <p className="text-sm text-muted-foreground mt-2">
-              Register additional vehicles to your profile
-            </p>
           </div>
-        </div>
+        )}
         
         <h2 className="text-xl font-semibold mb-4 mt-8">Recent Activity</h2>
         
         <div className="glass-card rounded-2xl overflow-hidden">
-          <div className="divide-y">
-            {[
-              { text: "Towing service requested", time: "Yesterday, 3:45 PM" },
-              { text: "Added new vehicle", time: "Oct 15, 2023" },
-              { text: "Paid traffic challan", time: "Oct 10, 2023" }
-            ].map((activity, index) => (
-              <div key={index} className="p-4 flex justify-between items-center">
-                <p className="font-medium text-sm">{activity.text}</p>
-                <p className="text-xs text-muted-foreground">{activity.time}</p>
+          {userVehicles.length === 0 ? (
+            <div className="p-8 text-center">
+              <p className="text-muted-foreground">No recent activity yet. Add a vehicle to get started.</p>
+            </div>
+          ) : (
+            <div className="divide-y">
+              {[
+                { text: "Towing service requested", time: "Yesterday, 3:45 PM" },
+                { text: "Added new vehicle", time: "Oct 15, 2023" },
+                { text: "Paid traffic challan", time: "Oct 10, 2023" }
+              ].map((activity, index) => (
+                <div key={index} className="p-4 flex justify-between items-center">
+                  <p className="font-medium text-sm">{activity.text}</p>
+                  <p className="text-xs text-muted-foreground">{activity.time}</p>
+                </div>
+              ))}
+              
+              <div className="p-4 flex justify-center">
+                <button className="text-sm text-primary hover:underline">
+                  View All Activity
+                </button>
               </div>
-            ))}
-          </div>
-          
-          <div className="p-4 flex justify-center">
-            <button className="text-sm text-primary hover:underline">
-              View All Activity
-            </button>
-          </div>
+            </div>
+          )}
         </div>
       </div>
       
