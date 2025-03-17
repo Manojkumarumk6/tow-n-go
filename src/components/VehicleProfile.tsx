@@ -2,14 +2,19 @@
 import React from 'react';
 import { Car, Edit2 } from 'lucide-react';
 
+interface Vehicle {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string;
+  color: string;
+  vehicleType: string;
+  fuelType: string;
+}
+
 interface VehicleProfileProps {
-  vehicle: {
-    make: string;
-    model: string;
-    year: number;
-    licensePlate: string;
-    color: string;
-  };
+  vehicle: Vehicle;
   onEdit?: () => void;
 }
 
@@ -35,16 +40,16 @@ const VehicleProfile: React.FC<VehicleProfileProps> = ({ vehicle, onEdit }) => {
         </button>
         
         <div className="absolute -bottom-8 right-6 w-16 h-16 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
-          <span className="uppercase font-bold text-sm text-gray-700">{vehicle.color}</span>
+          <span className="uppercase font-bold text-sm text-gray-700">{vehicle.color.substring(0, 3)}</span>
         </div>
       </div>
       
       <div className="p-6 pt-12">
         <div className="grid grid-cols-2 gap-4">
-          <InfoItem label="Vehicle Type" value="Sedan" />
-          <InfoItem label="Fuel Type" value="Gasoline" />
-          <InfoItem label="Insurance" value="Valid till Dec 2023" />
-          <InfoItem label="Last Service" value="3 months ago" />
+          <InfoItem label="Vehicle Type" value={vehicle.vehicleType} />
+          <InfoItem label="Fuel Type" value={vehicle.fuelType} />
+          <InfoItem label="License Plate" value={vehicle.licensePlate} />
+          <InfoItem label="Last Service" value="Not recorded" />
         </div>
       </div>
     </div>

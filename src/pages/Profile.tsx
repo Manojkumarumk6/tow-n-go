@@ -8,12 +8,27 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { toast } from 'sonner';
+import AddVehicleForm from '@/components/AddVehicleForm';
+
+// Define Vehicle type
+interface Vehicle {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string;
+  color: string;
+  vehicleType: string;
+  fuelType: string;
+}
 
 const Profile = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   // State to track if user has any vehicles
-  const [userVehicles, setUserVehicles] = useState<any[]>([]);
+  const [userVehicles, setUserVehicles] = useState<Vehicle[]>([]);
+  const [isAddVehicleOpen, setIsAddVehicleOpen] = useState(false);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -22,8 +37,45 @@ const Profile = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  // Load saved vehicles from localStorage on component mount
+  useEffect(() => {
+    if (user) {
+      const savedVehicles = localStorage.getItem(`vehicles-${user.email}`);
+      if (savedVehicles) {
+        try {
+          setUserVehicles(JSON.parse(savedVehicles));
+        } catch (error) {
+          console.error('Error parsing saved vehicles:', error);
+        }
+      }
+    }
+  }, [user]);
+
   const handleAddVehicle = () => {
-    alert("Add vehicle functionality would open here");
+    setIsAddVehicleOpen(true);
+  };
+  
+  const handleSaveVehicle = (vehicleData: Omit<Vehicle, 'id'>) => {
+    if (!user) return;
+    
+    const newVehicle: Vehicle = {
+      ...vehicleData,
+      id: Date.now().toString(), // Simple ID generation
+    };
+    
+    const updatedVehicles = [...userVehicles, newVehicle];
+    setUserVehicles(updatedVehicles);
+    
+    // Save to localStorage
+    localStorage.setItem(`vehicles-${user.email}`, JSON.stringify(updatedVehicles));
+    
+    setIsAddVehicleOpen(false);
+    toast.success('Vehicle added successfully');
+  };
+
+  const handleEditVehicle = (vehicleId: string) => {
+    // This will be implemented in a future update
+    toast.info('Edit vehicle functionality coming soon');
   };
   
   if (!user) return null; // Don't render anything while redirecting or if no user
@@ -79,8 +131,12 @@ const Profile = () => {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {userVehicles.map((vehicle, index) => (
-              <VehicleProfile key={index} vehicle={vehicle} onEdit={() => {}} />
+            {userVehicles.map((vehicle) => (
+              <VehicleProfile 
+                key={vehicle.id} 
+                vehicle={vehicle} 
+                onEdit={() => handleEditVehicle(vehicle.id)} 
+              />
             ))}
             
             <div 
@@ -127,6 +183,12 @@ const Profile = () => {
           )}
         </div>
       </div>
+      
+      <AddVehicleForm
+        open={isAddVehicleOpen}
+        onClose={() => setIsAddVehicleOpen(false)}
+        onSave={handleSaveVehicle}
+      />
       
       <OfflineNotice />
       <EmergencyButton />
