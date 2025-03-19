@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import ServiceCard from '@/components/ServiceCard';
 import EmergencyButton from '@/components/EmergencyButton';
 import OfflineNotice from '@/components/OfflineNotice';
-import { Wrench, Truck, Car, Clock, MapPin, CreditCard, Battery, Tire, Tool, AlertTriangle, Droplet, ZapFast, Receipt, Building, UserPlus } from 'lucide-react';
+import { Wrench, Truck, Car, Clock, MapPin, CreditCard, Battery, Fuel, Tool as ToolIcon, AlertTriangle, Droplet, Zap, Receipt, Building, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,7 +23,6 @@ const Services = () => {
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [selectedServiceDialog, setSelectedServiceDialog] = useState<string | null>(null);
   
-  // Get user vehicles from localStorage
   const getUserVehicles = () => {
     if (!user) return [];
     
@@ -79,7 +77,6 @@ const Services = () => {
     setSelectedServiceDialog(null);
   };
   
-  // Service dialogs
   const renderTowingDialog = () => (
     <Dialog open={selectedServiceDialog === 'towing'} onOpenChange={(open) => !open && setSelectedServiceDialog(null)}>
       <DialogContent className="sm:max-w-[600px]">
@@ -135,7 +132,7 @@ const Services = () => {
                 <AccordionItem value="ev-towing">
                   <AccordionTrigger className="py-3">
                     <div className="flex items-center gap-2">
-                      <ZapFast className="h-4 w-4 text-green-500" />
+                      <Zap className="h-4 w-4 text-green-500" />
                       <span>EV Towing</span>
                     </div>
                   </AccordionTrigger>
@@ -189,7 +186,7 @@ const Services = () => {
                 <AccordionItem value="tire-replacement">
                   <AccordionTrigger className="py-3">
                     <div className="flex items-center gap-2">
-                      <Tire className="h-4 w-4 text-gray-500" />
+                      <Fuel className="h-4 w-4 text-gray-500" />
                       <span>Flat Tire Replacement</span>
                     </div>
                   </AccordionTrigger>
@@ -215,7 +212,7 @@ const Services = () => {
                 <AccordionItem value="minor-repairs">
                   <AccordionTrigger className="py-3">
                     <div className="flex items-center gap-2">
-                      <Tool className="h-4 w-4 text-orange-500" />
+                      <ToolIcon className="h-4 w-4 text-orange-500" />
                       <span>Minor Mechanical Repairs</span>
                     </div>
                   </AccordionTrigger>
@@ -311,7 +308,7 @@ const Services = () => {
                 <AccordionItem value="ev-charging">
                   <AccordionTrigger className="py-3">
                     <div className="flex items-center gap-2">
-                      <ZapFast className="h-4 w-4 text-green-500" />
+                      <Zap className="h-4 w-4 text-green-500" />
                       <span>EV Charging Assistance</span>
                     </div>
                   </AccordionTrigger>
