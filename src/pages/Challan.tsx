@@ -16,7 +16,7 @@ const Challan = () => {
       date: '2023-10-10',
       violation: 'Speeding (15km/h above limit)',
       location: 'Main Street, Downtown',
-      amount: 150,
+      amount: 1500,
       status: 'unpaid'
     },
     {
@@ -24,7 +24,7 @@ const Challan = () => {
       date: '2023-09-25',
       violation: 'Illegal Parking',
       location: 'City Center Mall',
-      amount: 100,
+      amount: 1000,
       status: 'paid'
     }
   ];
@@ -138,7 +138,7 @@ const Challan = () => {
                     </div>
                     
                     <div className="text-right">
-                      <p className="font-semibold">${challan.amount}</p>
+                      <p className="font-semibold">₹{challan.amount.toLocaleString('en-IN')}</p>
                       
                       {challan.status === 'unpaid' && (
                         <button 

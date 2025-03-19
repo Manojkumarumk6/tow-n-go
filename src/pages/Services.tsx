@@ -48,9 +48,9 @@ const Services = () => {
   };
 
   const serviceHistory = [
-    { id: 'SRV-1001', date: '2023-10-15', type: 'Towing', status: 'Completed', cost: '$85.00' },
-    { id: 'SRV-982', date: '2023-09-22', type: 'Repair', status: 'Completed', cost: '$125.50' },
-    { id: 'SRV-879', date: '2023-08-05', type: 'Fuel Delivery', status: 'Completed', cost: '$45.00' },
+    { id: 'SRV-1001', date: '2023-10-15', type: 'Towing', status: 'Completed', cost: '₹7,000' },
+    { id: 'SRV-982', date: '2023-09-22', type: 'Repair', status: 'Completed', cost: '₹10,500' },
+    { id: 'SRV-879', date: '2023-08-05', type: 'Fuel Delivery', status: 'Completed', cost: '₹3,700' },
   ];
 
   const nearbyServices = [
