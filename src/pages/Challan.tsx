@@ -9,25 +9,15 @@ const Challan = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchComplete, setSearchComplete] = useState(false);
   
-  // Mock challan data
-  const challans = [
-    {
-      id: 'CH-1234',
-      date: '2023-10-10',
-      violation: 'Speeding (15km/h above limit)',
-      location: 'Main Street, Downtown',
-      amount: 1500,
-      status: 'unpaid'
-    },
-    {
-      id: 'CH-5678',
-      date: '2023-09-25',
-      violation: 'Illegal Parking',
-      location: 'City Center Mall',
-      amount: 1000,
-      status: 'paid'
-    }
-  ];
+  // Empty challans array - no default examples
+  const challans: Array<{
+    id: string;
+    date: string;
+    violation: string;
+    location: string;
+    amount: number;
+    status: string;
+  }> = [];
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,54 +97,62 @@ const Challan = () => {
             <h2 className="text-lg font-semibold mb-4">Challan Results</h2>
             
             <div className="glass-card rounded-2xl overflow-hidden">
-              {challans.map((challan) => (
-                <div key={challan.id} className="border-b last:border-b-0 p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center">
-                        <File className="h-4 w-4 text-primary mr-2" />
-                        <h3 className="font-medium">{challan.id}</h3>
-                        <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                          challan.status === 'paid' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-amber-100 text-amber-800'
-                        }`}>
-                          {challan.status === 'paid' ? (
-                            <span className="flex items-center">
-                              <Check className="h-3 w-3 mr-1" /> Paid
+              {challans.length > 0 ? (
+                <>
+                  {challans.map((challan) => (
+                    <div key={challan.id} className="border-b last:border-b-0 p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center">
+                            <File className="h-4 w-4 text-primary mr-2" />
+                            <h3 className="font-medium">{challan.id}</h3>
+                            <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                              challan.status === 'paid' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-amber-100 text-amber-800'
+                            }`}>
+                              {challan.status === 'paid' ? (
+                                <span className="flex items-center">
+                                  <Check className="h-3 w-3 mr-1" /> Paid
+                                </span>
+                              ) : (
+                                <span className="flex items-center">
+                                  <X className="h-3 w-3 mr-1" /> Unpaid
+                                </span>
+                              )}
                             </span>
-                          ) : (
-                            <span className="flex items-center">
-                              <X className="h-3 w-3 mr-1" /> Unpaid
-                            </span>
+                          </div>
+                          
+                          <p className="text-sm mt-1">{challan.violation}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {challan.location} • {new Date(challan.date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        
+                        <div className="text-right">
+                          <p className="font-semibold">₹{challan.amount.toLocaleString('en-IN')}</p>
+                          
+                          {challan.status === 'unpaid' && (
+                            <button 
+                              className="mt-2 px-3 py-1 text-xs bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors flex items-center justify-center ml-auto"
+                              onClick={() => handlePayChallan(challan.id)}
+                            >
+                              <CreditCard className="h-3 w-3 mr-1" /> Pay Now
+                            </button>
                           )}
-                        </span>
+                        </div>
                       </div>
-                      
-                      <p className="text-sm mt-1">{challan.violation}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {challan.location} • {new Date(challan.date).toLocaleDateString()}
-                      </p>
                     </div>
-                    
-                    <div className="text-right">
-                      <p className="font-semibold">₹{challan.amount.toLocaleString('en-IN')}</p>
-                      
-                      {challan.status === 'unpaid' && (
-                        <button 
-                          className="mt-2 px-3 py-1 text-xs bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors flex items-center justify-center ml-auto"
-                          onClick={() => handlePayChallan(challan.id)}
-                        >
-                          <CreditCard className="h-3 w-3 mr-1" /> Pay Now
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  ))}
+                </>
+              ) : (
+                <div className="p-8 text-center">
+                  <p className="text-muted-foreground">No challans found for {licensePlate}</p>
                 </div>
-              ))}
+              )}
               
               <div className="bg-muted/40 p-4 flex items-center justify-between text-sm">
-                <span>Showing all results for <strong>{licensePlate}</strong></span>
+                <span>Showing results for <strong>{licensePlate}</strong></span>
                 <button className="text-primary hover:underline flex items-center">
                   View Complete History <ArrowRight className="h-3 w-3 ml-1" />
                 </button>

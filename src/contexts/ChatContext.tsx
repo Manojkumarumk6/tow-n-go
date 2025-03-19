@@ -86,7 +86,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     
     // Simulate bot response after a delay
     setTimeout(() => {
-      const botResponse = generateBotResponse(content);
+      const botResponse = "I'm still learning how to respond to specific requests. Please contact our support team for assistance.";
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'bot',
@@ -118,33 +118,4 @@ export const useChat = () => {
     throw new Error('useChat must be used within a ChatProvider');
   }
   return context;
-};
-
-// Simple function to generate responses based on user input
-const generateBotResponse = (userMessage: string): string => {
-  const normalizedMessage = userMessage.toLowerCase();
-  
-  if (normalizedMessage.includes('towing') || normalizedMessage.includes('tow')) {
-    return "I can help you request a towing service. Please confirm your location and I'll dispatch assistance right away.";
-  } else if (normalizedMessage.includes('repair') || normalizedMessage.includes('fix')) {
-    return "Our mobile repair service can help with basic repairs. What specific issue are you experiencing with your vehicle?";
-  } else if (normalizedMessage.includes('challan') || normalizedMessage.includes('ticket') || normalizedMessage.includes('fine')) {
-    return "I can guide you through the process of paying your traffic challan. Would you like to proceed with that?";
-  } else if (normalizedMessage.includes('fuel') || normalizedMessage.includes('gas') || normalizedMessage.includes('petrol')) {
-    return "Running out of fuel? I can arrange for fuel delivery to your location. How much and what type of fuel do you need?";
-  } else if (normalizedMessage.includes('hello') || normalizedMessage.includes('hi') || normalizedMessage.includes('hey')) {
-    return "Hello! How can I assist you with your roadside needs today?";
-  } else if (normalizedMessage.includes('thank')) {
-    return "You're welcome! Is there anything else I can help you with?";
-  } else if (normalizedMessage.includes('bye') || normalizedMessage.includes('goodbye')) {
-    return "Thank you for using our service. Safe travels!";
-  } else if (normalizedMessage.includes('emergency')) {
-    return "If you're in an emergency situation, please use the emergency button for immediate assistance, or call emergency services directly.";
-  } else if (normalizedMessage.includes('location') || normalizedMessage.includes('where')) {
-    return "I can use your device's location to help find services near you. Would you like to share your location?";
-  } else if (normalizedMessage.includes('offline') || normalizedMessage.includes('no internet')) {
-    return "Don't worry! Our app works offline for critical emergency services like towing and roadside assistance.";
-  } else {
-    return "I'm here to help with roadside assistance, towing services, repairs, and challan payments. Could you provide more details about what you need?";
-  }
 };

@@ -47,18 +47,23 @@ const Services = () => {
     }
   };
 
-  const serviceHistory = [
-    { id: 'SRV-1001', date: '2023-10-15', type: 'Towing', status: 'Completed', cost: '₹7,000' },
-    { id: 'SRV-982', date: '2023-09-22', type: 'Repair', status: 'Completed', cost: '₹10,500' },
-    { id: 'SRV-879', date: '2023-08-05', type: 'Fuel Delivery', status: 'Completed', cost: '₹3,700' },
-  ];
+  // Empty service history array - no default examples
+  const serviceHistory: Array<{
+    id: string;
+    date: string;
+    type: string;
+    status: string;
+    cost: string;
+  }> = [];
 
-  const nearbyServices = [
-    { id: 1, name: 'City Garage', distance: '0.8 miles', rating: '4.8', services: ['Repair', 'Towing'] },
-    { id: 2, name: 'AutoFix Center', distance: '1.2 miles', rating: '4.5', services: ['Repair', 'Oil Change'] },
-    { id: 3, name: 'Express Mechanics', distance: '2.5 miles', rating: '4.7', services: ['Repair', 'Towing', 'Battery'] },
-    { id: 4, name: 'Highway Assistance', distance: '3.1 miles', rating: '4.3', services: ['Towing', 'Fuel'] },
-  ];
+  // Empty nearby services array - no default examples
+  const nearbyServices: Array<{
+    id: number;
+    name: string;
+    distance: string;
+    rating: string;
+    services: string[];
+  }> = [];
 
   return (
     <div className="page-transition pt-24 pb-16 px-6">

@@ -23,6 +23,8 @@ const ServiceHistoryDialog: React.FC<ServiceHistoryDialogProps> = ({
   onOpenChange,
   serviceHistory
 }) => {
+  const hasServiceHistory = serviceHistory.length > 0;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -42,7 +44,7 @@ const ServiceHistoryDialog: React.FC<ServiceHistoryDialogProps> = ({
             </TabsList>
             
             <TabsContent value="all" className="mt-4">
-              {serviceHistory.length > 0 ? (
+              {hasServiceHistory ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -78,40 +80,54 @@ const ServiceHistoryDialog: React.FC<ServiceHistoryDialogProps> = ({
             </TabsContent>
             
             <TabsContent value="payments" className="mt-4">
-              <div className="space-y-4">
-                {serviceHistory.map((service) => (
-                  <div key={service.id} className="p-4 border rounded-lg">
-                    <div className="flex justify-between">
+              {hasServiceHistory ? (
+                <div className="space-y-4">
+                  {serviceHistory.map((service) => (
+                    <div key={service.id} className="p-4 border rounded-lg">
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="font-medium">{service.type} Service</p>
+                          <p className="text-sm text-muted-foreground">{service.date}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">{service.cost}</p>
+                          <p className="text-xs text-green-600">Paid</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 text-sm flex gap-2">
+                        <Button size="sm" variant="outline">View Invoice</Button>
+                        <Button size="sm" variant="outline">Download Receipt</Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Clock className="h-12 w-12 mx-auto text-muted-foreground" />
+                  <p className="mt-4 text-muted-foreground">No payment history available</p>
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="completed" className="mt-4">
+              {hasServiceHistory ? (
+                <div className="space-y-4">
+                  {serviceHistory.map((service) => (
+                    <div key={service.id} className="p-4 border rounded-lg flex items-center justify-between">
                       <div>
                         <p className="font-medium">{service.type} Service</p>
                         <p className="text-sm text-muted-foreground">{service.date}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">{service.cost}</p>
-                        <p className="text-xs text-green-600">Paid</p>
-                      </div>
+                      <Button size="sm" variant="outline">View Details</Button>
                     </div>
-                    <div className="mt-3 text-sm flex gap-2">
-                      <Button size="sm" variant="outline">View Invoice</Button>
-                      <Button size="sm" variant="outline">Download Receipt</Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="completed" className="mt-4">
-              <div className="space-y-4">
-                {serviceHistory.map((service) => (
-                  <div key={service.id} className="p-4 border rounded-lg flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{service.type} Service</p>
-                      <p className="text-sm text-muted-foreground">{service.date}</p>
-                    </div>
-                    <Button size="sm" variant="outline">View Details</Button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Clock className="h-12 w-12 mx-auto text-muted-foreground" />
+                  <p className="mt-4 text-muted-foreground">No completed services available</p>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
