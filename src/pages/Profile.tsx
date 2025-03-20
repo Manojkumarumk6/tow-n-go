@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import AddVehicleForm from '@/components/AddVehicleForm';
+import EditVehicleForm from '@/components/EditVehicleForm';
 
 // Define Vehicle type
 interface Vehicle {
@@ -29,6 +30,8 @@ const Profile = () => {
   // State to track if user has any vehicles
   const [userVehicles, setUserVehicles] = useState<Vehicle[]>([]);
   const [isAddVehicleOpen, setIsAddVehicleOpen] = useState(false);
+  const [isEditVehicleOpen, setIsEditVehicleOpen] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -74,8 +77,28 @@ const Profile = () => {
   };
 
   const handleEditVehicle = (vehicleId: string) => {
-    // This will be implemented in a future update
-    toast.info('Edit vehicle functionality coming soon');
+    const vehicle = userVehicles.find(v => v.id === vehicleId);
+    if (vehicle) {
+      setSelectedVehicle(vehicle);
+      setIsEditVehicleOpen(true);
+    }
+  };
+  
+  const handleUpdateVehicle = (updatedVehicle: Vehicle) => {
+    if (!user) return;
+    
+    const updatedVehicles = userVehicles.map(vehicle => 
+      vehicle.id === updatedVehicle.id ? updatedVehicle : vehicle
+    );
+    
+    setUserVehicles(updatedVehicles);
+    
+    // Save to localStorage
+    localStorage.setItem(`vehicles-${user.email}`, JSON.stringify(updatedVehicles));
+    
+    setIsEditVehicleOpen(false);
+    setSelectedVehicle(null);
+    toast.success('Vehicle updated successfully');
   };
   
   if (!user) return null; // Don't render anything while redirecting or if no user
@@ -188,6 +211,13 @@ const Profile = () => {
         open={isAddVehicleOpen}
         onClose={() => setIsAddVehicleOpen(false)}
         onSave={handleSaveVehicle}
+      />
+      
+      <EditVehicleForm
+        open={isEditVehicleOpen}
+        onClose={() => setIsEditVehicleOpen(false)}
+        onSave={handleUpdateVehicle}
+        vehicle={selectedVehicle}
       />
       
       <OfflineNotice />

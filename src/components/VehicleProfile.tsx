@@ -35,6 +35,7 @@ const VehicleProfile: React.FC<VehicleProfileProps> = ({ vehicle, onEdit }) => {
         <button 
           className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
           onClick={onEdit}
+          aria-label="Edit vehicle"
         >
           <Edit2 className="h-4 w-4 text-white" />
         </button>
