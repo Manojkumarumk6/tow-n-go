@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle, Car, Clock, Zap } from 'lucide-react';
+import { AlertTriangle, Car, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -85,19 +85,6 @@ const TowingServiceDialog: React.FC<TowingServiceDialogProps> = ({
                   <AccordionContent>
                     <p className="text-sm mb-3">Plan ahead for non-emergency vehicle transport.</p>
                     <Button onClick={() => requestService('Towing', 'Scheduled')}>Schedule Towing</Button>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="ev-towing">
-                  <AccordionTrigger className="py-3">
-                    <div className="flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-green-500" />
-                      <span>EV Towing</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm mb-3">Specialized towing for electric vehicles with charging needs.</p>
-                    <Button onClick={() => requestService('Towing', 'EV')}>Request EV Towing</Button>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
